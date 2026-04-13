@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: pano-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # persist temp outputs (optional — they are auto-deleted after each response)
+      - ./backend/outputs:/app/outputs
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Empty = nginx proxies /api/ to the backend container
+        VITE_API_BASE_URL: ""
+    container_name: pano-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
